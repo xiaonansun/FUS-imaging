@@ -68,20 +68,20 @@ for i = 1:length(mask)
     end
 end
 
-%%
+%% Plot mean MR image, ROI mask(s), and time course
 hFig = figure(1);
 set(hFig,'Position',[500 500 750 300]);
 hTile = tiledlayout(1,2);
 nexttile;
-img_disp = mean(img_stack(:,:,2:end),3);
-img_and_mask = img_disp+sum(mask_bnd,3)*max(img_disp(:));
+img_and_mask = img_2_disp+sum(mask_bnd,3)*max(img_2_disp(:));
+color_limits = prctile(img_2_disp,[5 95],'all')
 hIm = imagesc(img_and_mask); colormap('gray'); clim([0 150]);
 for i = 1:length(mask)
     txt = num2str(i);
     hText(i) = text(max(bnd{i}(:,2)),max(bnd{i}(:,1)),txt,...
         'HorizontalAlignment','center',...
-        'VerticalAlignment','top',...
-        'FontSize',14,...
+        'VerticalAlignment','middle',...
+        'FontSize',10,...
         'Color',[1 1 1]);
 end
 set(gca,'XTickLabel',[],...

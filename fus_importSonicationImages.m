@@ -58,7 +58,7 @@ arRoi = arImg.*arMask;
 roi_mean(i,:) = mean(arRoi,1);
 roi_stack{i} = reshape(arRoi,size(img_stack,1),size(img_stack,2),size(img_stack,3));
 end
-%%
+%% Generate mask boundaries for image display annotation
 clear bnd
 mask_bnd = zeros(size(img_stack,1),size(img_stack,2),length(mask));
 for i = 1:length(mask)
@@ -68,25 +68,25 @@ for i = 1:length(mask)
     end
 end
 
-%%
+%% Plot mean MR image, ROI mask(s), and time course
 hFig = figure(1);
 set(hFig,'Position',[500 500 750 300]);
 hTile = tiledlayout(1,2);
 nexttile;
-img_disp = mean(img_stack(:,:,2:end),3);
-img_and_mask = img_disp+sum(mask_bnd,3)*max(img_disp(:));
-hIm = imagesc(img_and_mask); colormap('gray'); clim([0 150]);
-for i = 1:length(mask)
+img_and_mask = img_2_disp+sum(mask_bnd,3)*max(img_2_disp(:));
+color_limits = prctile(img_2_disp,[10 95],'all'); %display ?-?ile of image values
+hIm = imagesc(img_and_mask); colormap('gray'); clim(color_limits);
+for i = 1:length(mask) % add text annotation to the image
     txt = num2str(i);
     hText(i) = text(max(bnd{i}(:,2)),max(bnd{i}(:,1)),txt,...
         'HorizontalAlignment','center',...
-        'VerticalAlignment','top',...
-        'FontSize',14,...
+        'VerticalAlignment','middle',...
+        'FontSize',10,...
         'Color',[1 1 1]);
 end
 set(gca,'XTickLabel',[],...
-    'YTicklabel',[])
-title([title_text ' ROIs'])
+    'YTicklabel',[]);
+title([title_text ' ROIs']);
 
 nexttile;
 legend_text = string(1:length(mask));
@@ -96,7 +96,7 @@ offsetAxes
 hLeg = legend(legend_text); set(hLeg,'Box','off');
 xlabel('Thermometry frame #'); ylabel('a.u.');
 title('Mean ROI intensity');
-for i = 1:length(hText)
+for i = 1:length(hText) % change text annotation color to match the time series plot
     hText(i).Color = hPlot(i).Color;
 end
 
@@ -104,4 +104,3 @@ save_path_pdf = fullfile(results_dir,[title_text '.pdf']);
 save_path_png = fullfile(results_dir,[title_text '.png']);
 save_path_eps = fullfile(results_dir,[title_text '.epsc']);
 saveas(hFig,save_path_pdf); saveas(hFig,save_path_png); saveas(hFig,save_path_eps);
-
