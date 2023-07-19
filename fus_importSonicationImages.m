@@ -1,6 +1,11 @@
-data_dir = 'D:\FUS_cases\4049-2022-09-12-09-19-35\Sonication8'; % directory of sonication imaging
-results_dir = 'D:\FUS_results\figures'; % directory for saving figures, change this to your own directory
-if ~exist("results_dir",'dir'); mkdir(results_dir); end
+if strcmp(getenv('COMPUTERNAME'),'WESTWOOD')
+    data_dir = 'E:\My Drive\FUS_cases\4049-2022-09-12-09-19-35\Sonication7'; % directory of sonication imaging
+    results_dir = 'J:\fus_imaging\figures'; % directory for saving figures, change this to your own directory
+else
+    data_dir = 'D:\FUS_cases\4049-2022-09-12-09-19-35\Sonication8'; % directory of sonication imaging
+    results_dir = 'D:\FUS_results\figures'; % directory for saving figures, change this to your own directory
+end
+if ~exist(results_dir,'dir'); mkdir(results_dir); end
 iSub = regexp(data_dir,filesep);
 title_text = data_dir(iSub(end)+1:end); % sonication subdirectory, also the title of the figure
 sonication_id = str2double(regexp(title_text,'\d*','match'));
@@ -104,3 +109,10 @@ save_path_pdf = fullfile(results_dir,[title_text '.pdf']);
 save_path_png = fullfile(results_dir,[title_text '.png']);
 save_path_eps = fullfile(results_dir,[title_text '.epsc']);
 saveas(hFig,save_path_pdf); saveas(hFig,save_path_png); saveas(hFig,save_path_eps);
+
+%%
+clear dImg bsImg
+dImg = diff(img_stack(:,:,idxReal),1,3);
+bsImg = img_stack(:,:,find(idxReal,1)+1:end)-img_stack(:,:,find(idxReal, 1 )); % changes relative to baseline (first image)
+hVid = implay(bsImg,1);
+% hVid.Parent.Color = [0.25 0.25 0.25];
